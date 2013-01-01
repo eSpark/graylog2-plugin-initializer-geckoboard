@@ -19,6 +19,7 @@
  */
 package org.graylog2.geckoboardinitializer.initializer;
 
+import org.graylog2.geckoboardinitializer.initializer.responsebuilders.TotalCountResponse;
 import org.graylog2.geckoboardinitializer.initializer.responsebuilders.StreamCountResponse;
 import org.graylog2.geckoboardinitializer.initializer.responsebuilders.StreamNotFoundException;
 import org.graylog2.plugin.GraylogServer;
@@ -83,6 +84,10 @@ public class RequestHandler extends SimpleChannelHandler {
     private ResponseBuilder getResponseBuilder(QueryStringDecoder qsd) throws NoResponseBuilderAvailableException {
         if (qsd.getPath().equals(NAMESPACE + "/stream_count")) {
             return new StreamCountResponse(server);
+        }
+        
+        if (qsd.getPath().equals(NAMESPACE + "/total_count")) {
+            return new TotalCountResponse(server);
         }
         
         throw new NoResponseBuilderAvailableException();

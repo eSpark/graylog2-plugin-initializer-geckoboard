@@ -19,8 +19,6 @@
  */
 package org.graylog2.geckoboardinitializer.initializer.responsebuilders;
 
-import java.util.List;
-import java.util.Map;
 import org.graylog2.geckoboardinitializer.initializer.ResponseBuilder;
 import org.graylog2.plugin.GraylogServer;
 import org.graylog2.plugin.Tools;
@@ -29,32 +27,25 @@ import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 /**
  * @author Lennart Koopmann <lennart@socketfeed.com>
  */
-public class StreamCountResponse implements ResponseBuilder {
+public class TotalCountResponse implements ResponseBuilder {
 
-    public static final int STANDARD_TIMEFRAME = 5*60;
+    private final GraylogServer server;
     
-    private GraylogServer server;
-
-    public StreamCountResponse(GraylogServer server) {
+    public TotalCountResponse(GraylogServer server) {
         this.server = server;
     }
-    
+
     /*
      * "Number + optional secondary stat"
      * 
      * http://docs.geckoboard.com/custom-widgets/number.html
      */
-    public String build(QueryStringDecoder qsd) throws StreamNotFoundException {
-        String streamId = ResponseBuilderTools.customParameterFromQueryParameters(qsd, "stream_id");
+    public String build(QueryStringDecoder qsd) {
         int timeframe = ResponseBuilderTools.timeframeFromQueryParameters(qsd);
         int since = Tools.getUTCTimestamp()-timeframe;
         
-        if (!server.getEnabledStreams().containsKey(streamId)) {
-            throw new StreamNotFoundException();
-        }
-
         // We are only adding an Integer here. No real Map to JSON stuff required.
-        return "{\"item\":[{\"text\":\"\",\"value\": " + server.getMessageGateway().streamMessageCount(streamId, since) + "}]}";
+        return "{\"item\":[{\"text\":\"\",\"value\": " + server.getMessageGateway().totalMessageCount(since) + "}]}";
     }
     
 }
